@@ -143,13 +143,13 @@ install_prerequisites() {
     
     case "$distro" in
         "debian")
-            sudo apt install -y curl wget apt-transport-https gnupg lsb-release ca-certificates git
+            sudo apt install -y curl wget apt-transport-https gnupg lsb-release ca-certificates git make
             ;;
         "rhel")
             if command_exists dnf; then
-                sudo dnf install -y curl wget ca-certificates gnupg git
+                sudo dnf install -y curl wget ca-certificates gnupg git make
             else
-                sudo yum install -y curl wget ca-certificates gnupg git
+                sudo yum install -y curl wget ca-certificates gnupg git make
             fi
             ;;
     esac
@@ -265,6 +265,73 @@ install_kubectl() {
     rm kubectl
     
     log "kubectl installed successfully"
+}
+
+# Configure kubectl completions and alias
+configure_kubectl() {
+    log "Configuring kubectl completions and alias..."
+    
+    if [[ "$DRY_RUN" == true ]]; then
+        debug "DRY RUN: Would configure kubectl completions and alias"
+        return
+    fi
+    
+    # Detect shell and appropriate config file
+    local shell_config=""
+    local current_shell
+    current_shell=$(basename "$SHELL" 2>/dev/null || echo "bash")
+    
+    case "$current_shell" in
+        "bash")
+            if [[ -f "$HOME/.bashrc" ]]; then
+                shell_config="$HOME/.bashrc"
+            elif [[ -f "$HOME/.bash_profile" ]]; then
+                shell_config="$HOME/.bash_profile"
+            fi
+            ;;
+        "zsh")
+            if [[ -f "$HOME/.zshrc" ]]; then
+                shell_config="$HOME/.zshrc"
+            fi
+            ;;
+        *)
+            if [[ -f "$HOME/.profile" ]]; then
+                shell_config="$HOME/.profile"
+            fi
+            ;;
+    esac
+    
+    if [[ -n "$shell_config" ]]; then
+        # Add kubectl completion
+        if ! grep -q 'kubectl completion' "$shell_config"; then
+            echo "" >> "$shell_config"
+            echo "# kubectl completion and alias" >> "$shell_config"
+            case "$current_shell" in
+                "bash")
+                    echo "source <(kubectl completion bash)" >> "$shell_config"
+                    echo "complete -o default -F __start_kubectl k" >> "$shell_config"
+                    ;;
+                "zsh")
+                    echo "source <(kubectl completion zsh)" >> "$shell_config"
+                    echo "compdef __start_kubectl k" >> "$shell_config"
+                    ;;
+            esac
+            log "Added kubectl completion to $shell_config"
+        fi
+        
+        # Add kubectl alias
+        if ! grep -q "alias k=" "$shell_config"; then
+            echo "alias k=kubectl" >> "$shell_config"
+            log "Added kubectl alias 'k' to $shell_config"
+        fi
+    else
+        warn "Could not detect shell config file. Please manually add:"
+        warn "  alias k=kubectl"
+        warn "  source <(kubectl completion bash)  # for bash"
+        warn "  source <(kubectl completion zsh)   # for zsh"
+    fi
+    
+    log "kubectl configuration complete"
 }
 
 # Install kubectx and kubens
@@ -666,6 +733,7 @@ main() {
     
     # Install all tools
     install_kubectl "$distro"
+    configure_kubectl
     install_kubectx "$distro"
     install_krew
     install_helm
@@ -690,8 +758,9 @@ main() {
         log "   1. Restart your shell or run: source ~/.bashrc"
         log "   2. Verify tools: ./verify-tools.sh"
         log "   3. Connect to your cluster: kubectl config use-context <context>"
-        log "   4. Test with: kubectl get nodes"
+        log "   4. Test with: kubectl get nodes (or just: k get nodes)"
         echo
+        log "⚡ kubectl is now available as 'k' with auto-completion!"
         log "🔧 krew (kubectl plugin manager) is installed!"
         log "   Try: kubectl krew search"
     else

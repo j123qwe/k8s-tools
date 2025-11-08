@@ -1,12 +1,20 @@
 #!/bin/bash
 
+# Set up basic alias (always available)
+alias k=kubectl
+
+# Source bashrc to get our configuration if available
+if [[ -f ~/.bashrc ]]; then
+    source ~/.bashrc 2>/dev/null || true
+fi
+
 echo "🚀 Kubernetes Tools Container"
 echo "=============================="
 echo
 
 # Show available tools
 echo "📦 Available Tools:"
-echo "  kubectl, kubectx, kubens, krew"
+echo "  kubectl (k), kubectx, kubens, krew"
 echo "  helm, k9s, skaffold, stern"
 echo "  dive, popeye, kubesec, trivy"
 echo "  kubetail, kustomize"

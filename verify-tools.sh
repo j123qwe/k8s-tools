@@ -83,8 +83,9 @@ echo -e "${BLUE}Verification Complete!${NC}"
 echo
 echo "To get started with Kubernetes:"
 echo "1. Connect to your existing cluster: kubectl config use-context <context>"
-echo "2. Verify connection: kubectl cluster-info"
-echo "3. Explore with k9s or kubectl get nodes"
+echo "2. Verify connection: kubectl cluster-info (or: k cluster-info)"
+echo "3. Explore with k9s or kubectl get nodes (or: k get nodes)"
 echo "4. Install kubectl plugins: kubectl krew search"
 echo
+echo "⚡ Note: kubectl is aliased as 'k' with tab completion!"
 echo "For help with any tool, use: <tool-name> --help"

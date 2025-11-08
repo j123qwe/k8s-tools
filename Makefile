@@ -16,7 +16,7 @@ run:
 	docker run -it --rm \
 		--name $(CONTAINER_NAME) \
 		-v ~/.kube:/home/k8suser/.kube:ro \
-		-v $(PWD):/workspace \
+		-v $(shell pwd):/workspace \
 		--network host \
 		$(IMAGE_NAME):$(IMAGE_TAG)
 
@@ -30,7 +30,7 @@ exec:
 	fi
 	docker run --rm \
 		-v ~/.kube:/home/k8suser/.kube:ro \
-		-v $(PWD):/workspace \
+		-v $(shell pwd):/workspace \
 		--network host \
 		$(IMAGE_NAME):$(IMAGE_TAG) \
 		$(CMD)
