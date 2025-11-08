@@ -2,8 +2,6 @@
 
 # Kubernetes Tools Installation Script
 # Supports Debian/Ubuntu and RHEL/CentOS/Fedora based systems
-# Author: Auto-generated
-# Date: $(date +%Y-%m-%d)
 
 set -e
 
