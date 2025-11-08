@@ -1,0 +1,48 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary files
+*.tmp
+*.temp
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Downloaded binaries (in case someone runs partial installations)
+kubectl
+helm
+k9s
+skaffold
+stern
+dive
+popeye
+kubesec
+kubetail
+kustomize
+kubectx
+kubens
+
+# Package files
+*.deb
+*.rpm
+*.tar.gz
+*.zip

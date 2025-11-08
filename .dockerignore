@@ -1,0 +1,53 @@
+# Git files
+.git
+.gitignore
+
+# Documentation (keep README.md for build context)
+*.md
+!README.md
+
+# Scripts not needed in container
+install-k8s-tools.sh
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Downloaded binaries
+kubectl
+helm
+k9s
+skaffold
+stern
+dive
+popeye
+kubesec
+kubetail
+kustomize
+kubectx
+kubens
+
+# Package files
+*.deb
+*.rpm
+*.tar.gz
+*.zip
