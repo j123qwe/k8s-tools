@@ -17,7 +17,7 @@ echo "📦 Available Tools:"
 echo "  kubectl (k), kubectx, kubens, krew"
 echo "  helm, k9s, skaffold, stern"
 echo "  dive, popeye, kubesec, trivy"
-echo "  kubetail, kustomize"
+echo "  kubetail, kustomize, flux"
 echo
 
 # Check if kubectl config is mounted

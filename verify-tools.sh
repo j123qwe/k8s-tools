@@ -59,6 +59,11 @@ check_tool "helm" "helm version --short"
 check_tool "kustomize" "kustomize version --short"
 echo
 
+# Check GitOps tools
+echo -e "${YELLOW}GitOps Tools:${NC}"
+check_tool "flux" "flux version --client"
+echo
+
 # Check cluster management tools
 echo -e "${YELLOW}Cluster Management:${NC}"
 check_tool "k9s" "k9s version | head -1"

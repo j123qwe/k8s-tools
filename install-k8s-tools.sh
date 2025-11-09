@@ -67,6 +67,7 @@ TOOLS INSTALLED:
     • trivy           - Vulnerability scanner
     • kubetail        - Kubernetes log tailing utility
     • kustomize       - Kubernetes configuration customization
+    • flux            - GitOps toolkit for Kubernetes
 
 EOF
 }
@@ -532,114 +533,6 @@ install_trivy() {
     log "trivy installed successfully"
 }
 
-# Install minikube
-install_minikube() {
-    log "Installing minikube..."
-    
-    if is_installed "minikube"; then return; fi
-    
-    if [[ "$DRY_RUN" == true ]]; then
-        debug "DRY RUN: Would install minikube"
-        return
-    fi
-    
-    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-    chmod +x minikube
-    sudo mv minikube /usr/local/bin/
-    
-    log "minikube installed successfully"
-}
-
-# Install kind
-install_kind() {
-    log "Installing kind..."
-    
-    if is_installed "kind"; then return; fi
-    
-    if [[ "$DRY_RUN" == true ]]; then
-        debug "DRY RUN: Would install kind"
-        return
-    fi
-    
-    local kind_version
-    kind_version=$(curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest | grep tag_name | cut -d '"' -f 4)
-    curl -Lo kind "https://github.com/kubernetes-sigs/kind/releases/download/$kind_version/kind-linux-amd64"
-    chmod +x kind
-    sudo mv kind /usr/local/bin/
-    
-    log "kind installed successfully"
-}
-
-# Install k3d
-install_k3d() {
-    log "Installing k3d..."
-    
-    if is_installed "k3d"; then return; fi
-    
-    if [[ "$DRY_RUN" == true ]]; then
-        debug "DRY RUN: Would install k3d"
-        return
-    fi
-    
-    curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
-    
-    log "k3d installed successfully"
-}
-
-# Install minikube
-install_minikube() {
-    log "Installing minikube..."
-    
-    if is_installed "minikube"; then return; fi
-    
-    if [[ "$DRY_RUN" == true ]]; then
-        debug "DRY RUN: Would install minikube"
-        return
-    fi
-    
-    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-    chmod +x minikube
-    sudo mv minikube /usr/local/bin/
-    
-    log "minikube installed successfully"
-}
-
-# Install kind
-install_kind() {
-    log "Installing kind..."
-    
-    if is_installed "kind"; then return; fi
-    
-    if [[ "$DRY_RUN" == true ]]; then
-        debug "DRY RUN: Would install kind"
-        return
-    fi
-    
-    local kind_version
-    kind_version=$(curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest | grep tag_name | cut -d '"' -f 4)
-    curl -Lo kind "https://github.com/kubernetes-sigs/kind/releases/download/$kind_version/kind-linux-amd64"
-    chmod +x kind
-    sudo mv kind /usr/local/bin/
-    
-    log "kind installed successfully"
-}
-
-# Install k3d
-install_k3d() {
-    log "Installing k3d..."
-    
-    if is_installed "k3d"; then return; fi
-    
-    if [[ "$DRY_RUN" == true ]]; then
-        debug "DRY RUN: Would install k3d"
-        return
-    fi
-    
-    curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
-    
-    log "k3d installed successfully"
-}
-
 # Install kubetail
 install_kubetail() {
     log "Installing kubetail..."
@@ -673,6 +566,21 @@ install_kustomize() {
     sudo mv kustomize /usr/local/bin/
     
     log "kustomize installed successfully"
+}
+
+install_flux() {
+    log "Installing Flux CLI..."
+    
+    if is_installed "flux"; then return; fi
+    
+    if [[ "$DRY_RUN" == true ]]; then
+        debug "DRY RUN: Would install Flux CLI"
+        return
+    fi
+    
+    curl -s https://fluxcd.io/install.sh | sudo bash
+    
+    log "Flux CLI installed successfully"
 }
 
 # Verify installation
@@ -746,6 +654,7 @@ main() {
     install_trivy "$distro"
     install_kubetail
     install_kustomize
+    install_flux
     
     # Verify installations
     if [[ "$DRY_RUN" != true ]]; then

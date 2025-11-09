@@ -101,6 +101,9 @@ RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/
     chmod +x kustomize && \
     mv kustomize /usr/local/bin/
 
+# Install Flux CLI
+RUN curl -s https://fluxcd.io/install.sh | bash
+
 # Install krew as the k8suser
 USER k8suser
 WORKDIR /tmp
