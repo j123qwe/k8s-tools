@@ -68,6 +68,7 @@ TOOLS INSTALLED:
     • kubetail        - Kubernetes log tailing utility
     • kustomize       - Kubernetes configuration customization
     • flux            - GitOps toolkit for Kubernetes
+    • cilium          - Cilium CLI for eBPF-based networking
 
 EOF
 }
@@ -583,6 +584,27 @@ install_flux() {
     log "Flux CLI installed successfully"
 }
 
+install_cilium() {
+    log "Installing Cilium CLI..."
+    
+    if is_installed "cilium"; then return; fi
+    
+    if [[ "$DRY_RUN" == true ]]; then
+        debug "DRY RUN: Would install Cilium CLI"
+        return
+    fi
+    
+    CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
+    CLI_ARCH=amd64
+    if [ "$(uname -m)" = "aarch64" ]; then CLI_ARCH=arm64; fi
+    curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+    sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum
+    sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
+    rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+    
+    log "Cilium CLI installed successfully"
+}
+
 # Verify installation
 verify_installations() {
     log "Verifying installations..."
@@ -655,6 +677,7 @@ main() {
     install_kubetail
     install_kustomize
     install_flux
+    install_cilium
     
     # Verify installations
     if [[ "$DRY_RUN" != true ]]; then

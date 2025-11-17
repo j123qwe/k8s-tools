@@ -6,7 +6,7 @@ A comprehensive collection of essential Kubernetes tools for cluster management,
 
 - � **Automated Installation**: One-script installation for all tools
 - 🐳 **Docker Support**: Pre-built container with all tools included
-- 📦 **Comprehensive Toolset**: 13+ essential Kubernetes tools
+- 📦 **Comprehensive Toolset**: 14+ essential Kubernetes tools
 - 🔧 **kubectl Enhancement**: Tab completions and 'k' alias
 - 🛡️ **Multi-Distribution**: Support for Debian/Ubuntu and RHEL/CentOS/Fedora
 - 📊 **Verification**: Built-in tool verification script
@@ -29,6 +29,7 @@ A comprehensive collection of essential Kubernetes tools for cluster management,
 | **kubetail** | Kubernetes log tailing utility |
 | **kustomize** | Kubernetes configuration customization tool |
 | **flux** | GitOps toolkit for Kubernetes |
+| **cilium** | Cilium CLI for eBPF-based networking |
 
 ## Quick Start
 

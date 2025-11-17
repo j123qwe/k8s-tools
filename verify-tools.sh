@@ -64,6 +64,11 @@ echo -e "${YELLOW}GitOps Tools:${NC}"
 check_tool "flux" "flux version --client"
 echo
 
+# Check networking tools
+echo -e "${YELLOW}Networking Tools:${NC}"
+check_tool "cilium" "cilium version --client"
+echo
+
 # Check cluster management tools
 echo -e "${YELLOW}Cluster Management:${NC}"
 check_tool "k9s" "k9s version | head -1"

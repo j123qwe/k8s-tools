@@ -104,6 +104,15 @@ RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/
 # Install Flux CLI
 RUN curl -s https://fluxcd.io/install.sh | bash
 
+# Install Cilium CLI
+RUN CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt) && \
+    CLI_ARCH=amd64 && \
+    if [ "$(uname -m)" = "aarch64" ]; then CLI_ARCH=arm64; fi && \
+    curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum} && \
+    sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum && \
+    tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin && \
+    rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+
 # Install krew as the k8suser
 USER k8suser
 WORKDIR /tmp
