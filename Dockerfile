@@ -81,9 +81,13 @@ RUN POPEYE_VERSION=$(curl -s https://api.github.com/repos/derailed/popeye/releas
 
 # Install kubesec
 RUN KUBESEC_VERSION=$(curl -s https://api.github.com/repos/controlplaneio/kubesec/releases/latest | grep tag_name | cut -d '"' -f 4) && \
+    mkdir -p /tmp/kubesec && \
+    cd /tmp/kubesec && \
     curl -L "https://github.com/controlplaneio/kubesec/releases/download/$KUBESEC_VERSION/kubesec_linux_amd64.tar.gz" | tar xz && \
     chmod +x kubesec && \
-    mv kubesec /usr/local/bin/
+    mv kubesec /usr/local/bin/ && \
+    cd / && \
+    rm -rf /tmp/kubesec
 
 # Install trivy
 RUN TRIVY_VERSION=$(curl -s https://api.github.com/repos/aquasecurity/trivy/releases/latest | grep tag_name | cut -d '"' -f 4) && \

@@ -1,274 +1,195 @@
 # Kubernetes Tools Collection
 
-A comprehensive collection of essential Kubernetes tools for cluster management, development, and operations. This repository provides both automated installation scripts and a Docker containerized environment for easy access to all tools.
+A comprehensive collection of Kubernetes tools packaged in a Docker container for easy development and cluster management.
 
-## Features
+## Overview
 
-- � **Automated Installation**: One-script installation for all tools
-- 🐳 **Docker Support**: Pre-built container with all tools included
-- 📦 **Comprehensive Toolset**: 14+ essential Kubernetes tools
-- 🔧 **kubectl Enhancement**: Tab completions and 'k' alias
-- 🛡️ **Multi-Distribution**: Support for Debian/Ubuntu and RHEL/CentOS/Fedora
-- 📊 **Verification**: Built-in tool verification script
+This repository provides a containerized environment with all the essential Kubernetes tools pre-installed and configured. Whether you're developing applications for Kubernetes or managing clusters, this toolset has everything you need.
 
-## Tools Included
+## 🛠️ Included Tools
 
-| Tool | Description |
-|------|-------------|
-| **kubectl** | Official Kubernetes CLI with completions and 'k' alias |
-| **kubectx/kubens** | Context and namespace switching utilities |
-| **krew** | kubectl plugin manager |
-| **helm** | Kubernetes package manager |
-| **k9s** | Terminal-based UI for Kubernetes clusters |
-| **skaffold** | Continuous development for Kubernetes applications |
-| **stern** | Multi-pod log tailing |
-| **dive** | Docker image analyzer |
-| **popeye** | Kubernetes cluster sanitizer |
-| **kubesec** | Security scanner for Kubernetes resources |
-| **trivy** | Vulnerability scanner |
-| **kubetail** | Kubernetes log tailing utility |
-| **kustomize** | Kubernetes configuration customization tool |
-| **flux** | GitOps toolkit for Kubernetes |
-| **cilium** | Cilium CLI for eBPF-based networking |
+### Core Kubernetes Tools
+- **kubectl** - Official Kubernetes CLI (aliased as `k`)
+- **kubectx/kubens** - Context and namespace switching utilities
+- **krew** - kubectl plugin manager
 
-## Quick Start
+### Package Managers
+- **helm** - Kubernetes package manager
+- **kustomize** - Kubernetes configuration customization tool
 
-### Option 1: Native Installation
+### Development Tools
+- **skaffold** - Continuous development for Kubernetes applications
+- **stern** - Multi-pod log tailing utility
+- **dive** - Docker image layer analyzer
+
+### Cluster Management
+- **k9s** - Terminal-based Kubernetes dashboard
+- **popeye** - Kubernetes cluster resource sanitizer
+
+### Security Tools
+- **kubesec** - Security risk analysis for Kubernetes resources
+- **trivy** - Vulnerability scanner for containers and other artifacts
+
+### Utility Tools
+- **kubetail** - Kubernetes log tailing utility
+- **flux** - GitOps toolkit for Kubernetes
+- **cilium** - Cilium CLI for eBPF-based networking and security
+
+## 🚀 Quick Start
+
+### Using Docker
+
+Build and run the container:
 
 ```bash
-# Clone the repository
-git clone https://github.com/j123qwe/k8s-tools.git
-cd k8s-tools
-
-# Make the script executable and run
-chmod +x install-k8s-tools.sh
-./install-k8s-tools.sh
-
-# Verify installation
-./verify-tools.sh
+make build-run
 ```
 
-### Option 2: Docker Container
+Or use individual commands:
 
 ```bash
-# Clone the repository
-git clone https://github.com/j123qwe/k8s-tools.git
-cd k8s-tools
-
-# Build and run the container
+# Build the image
 make build
+
+# Run interactively
 make run
 
+# Execute a single command
+make exec CMD='kubectl get nodes'
 ```
 
-## Installation Options
-
-### Native Installation
-
-The installation script automatically detects your Linux distribution (Debian/Ubuntu or RHEL/CentOS/Fedora) and installs all tools with proper configuration.
+### Using docker-compose
 
 ```bash
-# Basic installation
+# Start the container
+make up
+
+# Get a shell in the running container
+make shell
+
+# Stop the container
+make down
+```
+
+### Local Installation
+
+Install all tools directly on your system:
+
+```bash
 ./install-k8s-tools.sh
-
-# Available options
-./install-k8s-tools.sh --help
-./install-k8s-tools.sh --verbose      # Detailed output
-./install-k8s-tools.sh --dry-run      # See what would be installed
-./install-k8s-tools.sh --force        # Reinstall existing tools
 ```
 
-After installation, restart your shell or source your shell configuration:
-```bash
-source ~/.bashrc   # or ~/.zshrc
-```
+Available options:
+- `-v, --verbose`: Enable verbose output
+- `-d, --dry-run`: Show what would be installed without installing
+- `-f, --force`: Install tools even if they already exist
+- `-h, --help`: Show help message
 
-### Docker Container
+## 📋 Verification
 
-The containerized version includes all tools pre-installed and configured in a lightweight Alpine Linux environment.
+Verify that all tools are installed correctly:
 
 ```bash
-# Using Makefile (recommended)
-make build    # Build the container image
-make run      # Run interactive container
-make shell    # Same as make run
-make verify   # Run verification inside container
+# In container
+verify-tools
 
-# Using Docker directly
-docker build -t k8s-tools .
-docker run -it --rm k8s-tools
-
-# Using docker-compose
-docker-compose up -d
-docker-compose exec k8s-tools bash
-```
-
-## kubectl Enhancement
-
-Both installation methods configure kubectl with:
-
-- **Tab completion**: Auto-complete for commands, resources, and names
-- **'k' alias**: Use `k` instead of `kubectl` for faster commands
-- **Auto-completion for 'k'**: The alias inherits all kubectl completions
-
-```bash
-# These commands work the same way
-kubectl get pods
-k get pods
-
-# Tab completion works for both
-k get po<TAB>    # Expands to 'pods'
-k get pods -n <TAB>    # Shows available namespaces
-```
-
-## Usage Examples
-
-### Basic Operations
-```bash
-# Check cluster connection
-kubectl cluster-info
-k get nodes
-
-# Switch contexts and namespaces
-kubectx production
-kubens kube-system
-
-# View logs from multiple pods
-stern app-name
-kubetail deployment/my-app
-```
-
-### Security and Analysis
-```bash
-# Scan cluster for issues
-popeye
-
-# Security analysis of manifests
-kubesec scan deployment.yaml
-
-# Vulnerability scanning
-trivy image nginx:latest
-```
-
-### Development Workflow
-```bash
-# Continuous development
-skaffold dev
-
-# Package management
-helm search repo nginx
-helm install my-release bitnami/nginx
-
-# Image analysis
-dive nginx:latest
-```
-
-## Directory Structure
-
-```
-k8s-tools/
-├── README.md                 # This file
-├── install-k8s-tools.sh     # Native installation script
-├── verify-tools.sh          # Tool verification script
-├── Dockerfile               # Container build configuration
-├── docker-compose.yml       # Container orchestration
-├── Makefile                 # Build and run commands
-├── entrypoint.sh            # Container entry point
-├── .dockerignore            # Docker build exclusions
-├── .gitignore               # Git exclusions
-└── LICENSE                  # MIT License
-```
-
-## Requirements
-
-### Native Installation
-- Linux (Debian/Ubuntu or RHEL/CentOS/Fedora)
-- sudo privileges
-- curl, wget (installed automatically)
-- Internet connection
-
-### Docker Installation
-- Docker Engine 20.10+
-- docker-compose (optional, for compose usage)
-
-## Verification
-
-After installation, verify all tools are working:
-
-```bash
-# Native installation
+# On local system
 ./verify-tools.sh
-
-# Docker container
-make verify
-# or
-docker run --rm k8s-tools ./verify-tools.sh
 ```
 
-## Troubleshooting
+## 🐳 Container Usage
 
-### Common Issues
+### Mounting Your Kubectl Config
 
-1. **Tools not found after installation**
-   ```bash
-   # Restart shell or source config
-   source ~/.bashrc
-   ```
+The container automatically mounts your local kubectl configuration:
 
-2. **Permission denied errors**
-   ```bash
-   # Ensure user has sudo privileges
-   sudo -l
-   ```
+```bash
+# Your ~/.kube/config is mounted to /home/k8suser/.kube/config
+docker run -it --rm \
+  -v ~/.kube:/home/k8suser/.kube:ro \
+  k8s-tools:latest
+```
 
-3. **kubectl completions not working**
-   ```bash
-   # Check if completion is loaded
-   type _kubectl
-   
-   # Manually source if needed
-   source <(kubectl completion bash)
-   ```
+### Working with Local Files
 
-4. **krew not in PATH**
-   ```bash
-   # Add to your shell config
-   export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-   ```
+Mount your current directory to work with Kubernetes manifests:
 
-### Docker Issues
+```bash
+docker run -it --rm \
+  -v ~/.kube:/home/k8suser/.kube:ro \
+  -v $(pwd):/workspace \
+  k8s-tools:latest
+```
 
-1. **Container build fails**
-   ```bash
-   # Clean Docker cache and rebuild
-   docker system prune -f
-   make build
-   ```
+## 🔧 Configuration
 
-2. **'k' alias not working in non-interactive mode**
-   
-   This is expected behavior. The 'k' alias works in interactive shells but may not work in `docker exec` commands. Use `kubectl` directly in scripts.
+### kubectl Completions and Aliases
 
-## Contributing
+The tools come pre-configured with:
+- `k` alias for `kubectl`
+- Tab completion for kubectl and the `k` alias
+- Proper shell integration
 
-We welcome contributions! Please feel free to:
+### Krew Plugin Manager
 
-- Report bugs or issues
-- Suggest new tools to include
-- Improve installation scripts
-- Update documentation
-- Submit pull requests
+Krew is installed and ready to use:
 
-## License
+```bash
+# Search for plugins
+kubectl krew search
+
+# Install a plugin
+kubectl krew install ctx
+```
+
+## 📁 Project Structure
+
+```
+.
+├── Dockerfile              # Container build configuration
+├── docker-compose.yml      # Docker Compose configuration
+├── Makefile                # Build and run automation
+├── install-k8s-tools.sh    # Local installation script
+├── verify-tools.sh         # Tool verification script
+├── entrypoint.sh           # Container entrypoint
+├── README.md               # This file
+└── CHANGELOG.md            # Version history
+```
+
+## 🛡️ Security
+
+- The container runs as a non-root user (`k8suser`)
+- Based on Alpine Linux for minimal attack surface
+- Only necessary packages are installed
+- Tools are downloaded from official sources with version verification
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Add new tools or improvements
+4. Test your changes
+5. Submit a pull request
+
+When adding new tools:
+1. Update the installation scripts
+2. Add verification in `verify-tools.sh`
+3. Update the Dockerfile
+4. Update this README
+
+## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
+## ⭐ Acknowledgments
 
-- All the amazing tool authors who make Kubernetes development easier
-- The Kubernetes community for building such an incredible ecosystem
-- Contributors and users who help improve this collection
+Thanks to all the amazing projects that make up this toolset:
+- [Kubernetes](https://kubernetes.io/)
+- [Helm](https://helm.sh/)
+- [k9s](https://k9scli.io/)
+- [Skaffold](https://skaffold.dev/)
+- And many more!
 
 ---
 
-**Happy Kubernetes-ing!** 🚀
+**Happy Kuberneting!** 🚢⚓

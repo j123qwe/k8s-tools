@@ -490,11 +490,20 @@ install_kubesec() {
         return
     fi
     
-    local kubesec_version
+    local kubesec_version temp_dir
     kubesec_version=$(curl -s https://api.github.com/repos/controlplaneio/kubesec/releases/latest | grep tag_name | cut -d '"' -f 4)
+    
+    # Create temporary directory to avoid overwriting README.md
+    temp_dir=$(mktemp -d)
+    cd "$temp_dir"
+    
     curl -L "https://github.com/controlplaneio/kubesec/releases/download/$kubesec_version/kubesec_linux_amd64.tar.gz" | tar xz
     chmod +x kubesec
     sudo mv kubesec /usr/local/bin/
+    
+    # Clean up temporary directory
+    cd - > /dev/null
+    rm -rf "$temp_dir"
     
     log "kubesec installed successfully"
 }
