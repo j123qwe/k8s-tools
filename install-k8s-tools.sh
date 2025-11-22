@@ -614,6 +614,53 @@ install_cilium() {
     log "Cilium CLI installed successfully"
 }
 
+# Install Hubble CLI
+install_hubble() {
+    log "Installing Hubble CLI..."
+
+    if is_installed "hubble"; then return; fi
+
+    if [[ "$DRY_RUN" == true ]]; then
+        debug "DRY RUN: Would install Hubble CLI"
+        return
+    fi
+
+    local hubble_version temp_dir cli_arch
+    # Get latest release tag from GitHub
+    hubble_version=$(curl -s https://api.github.com/repos/cilium/hubble/releases/latest | grep '"tag_name":' | cut -d '"' -f4)
+    if [[ -z "$hubble_version" ]]; then
+        warn "Could not determine latest Hubble release. Skipping Hubble installation."
+        return
+    fi
+
+    cli_arch=amd64
+    if [ "$(uname -m)" = "aarch64" ]; then cli_arch=arm64; fi
+
+    temp_dir=$(mktemp -d)
+    cd "$temp_dir"
+
+    # Try common archive name (tar.gz), extract the hubble binary and install
+    curl -L -f "https://github.com/cilium/hubble/releases/download/${hubble_version}/hubble-linux-${cli_arch}.tar.gz" -o hubble-linux-${cli_arch}.tar.gz || {
+        warn "Failed to download hubble archive for ${cli_arch}. Skipping."
+        cd - > /dev/null
+        rm -rf "$temp_dir"
+        return
+    }
+
+    tar xzf hubble-linux-${cli_arch}.tar.gz
+    if [[ -f hubble ]]; then
+        chmod +x hubble
+        sudo mv hubble /usr/local/bin/
+        log "Hubble CLI installed successfully"
+    else
+        warn "Hubble binary not found in archive. Skipping."
+    fi
+
+    # Clean up
+    cd - > /dev/null
+    rm -rf "$temp_dir"
+}
+
 # Verify installation
 verify_installations() {
     log "Verifying installations..."
@@ -687,6 +734,7 @@ main() {
     install_kustomize
     install_flux
     install_cilium
+    install_hubble
     
     # Verify installations
     if [[ "$DRY_RUN" != true ]]; then

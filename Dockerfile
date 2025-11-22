@@ -117,6 +117,16 @@ RUN CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium
     tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin && \
     rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
 
+# Install Hubble CLI
+RUN HUBBLE_VERSION=$(curl -s https://api.github.com/repos/cilium/hubble/releases/latest | grep tag_name | cut -d '"' -f 4) && \
+    CLI_ARCH=amd64 && \
+    if [ "$(uname -m)" = "aarch64" ]; then CLI_ARCH=arm64; fi && \
+    curl -L "https://github.com/cilium/hubble/releases/download/${HUBBLE_VERSION}/hubble-linux-${CLI_ARCH}.tar.gz" -o hubble-linux-${CLI_ARCH}.tar.gz && \
+    tar xzf hubble-linux-${CLI_ARCH}.tar.gz && \
+    chmod +x hubble && \
+    mv hubble /usr/local/bin/ && \
+    rm hubble-linux-${CLI_ARCH}.tar.gz
+
 # Install krew as the k8suser
 USER k8suser
 WORKDIR /tmp

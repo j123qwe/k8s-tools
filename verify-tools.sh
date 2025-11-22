@@ -67,6 +67,7 @@ echo
 # Check networking tools
 echo -e "${YELLOW}Networking Tools:${NC}"
 check_tool "cilium" "cilium version --client"
+check_tool "hubble" "hubble version --client 2>/dev/null | head -1"
 echo
 
 # Check cluster management tools
