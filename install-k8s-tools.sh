@@ -69,6 +69,7 @@ TOOLS INSTALLED:
     • kustomize       - Kubernetes configuration customization
     • flux            - GitOps toolkit for Kubernetes
     • cilium          - Cilium CLI for eBPF-based networking
+    • kind            - Local Kubernetes (kind) cluster utility
 
 EOF
 }
@@ -661,10 +662,50 @@ install_hubble() {
     rm -rf "$temp_dir"
 }
 
+# Install kind (Kubernetes IN Docker)
+install_kind() {
+    log "Installing kind (Kubernetes IN Docker)..."
+
+    if is_installed "kind"; then return; fi
+
+    if [[ "$DRY_RUN" == true ]]; then
+        debug "DRY RUN: Would install kind"
+        return
+    fi
+
+    local kind_version cli_arch url tmpfile
+    # Try to get latest stable version; fall back to a sensible default
+    kind_version=$(curl -sSfL https://api.github.com/repos/kubernetes-sigs/kind/releases/latest | grep '"tag_name":' | head -n1 | cut -d '"' -f4) || true
+    if [[ -z "$kind_version" ]]; then
+        kind_version="v0.20.0"
+    fi
+
+    cli_arch=amd64
+    case "$(uname -m)" in
+        x86_64) cli_arch=amd64 ;;
+        aarch64) cli_arch=arm64 ;;
+        armv7l|armv6l) cli_arch=arm ;;
+        *) cli_arch=amd64 ;;
+    esac
+
+    url="https://kind.sigs.k8s.io/dl/${kind_version}/kind-linux-${cli_arch}"
+
+    tmpfile=$(mktemp)
+    if curl -fsSL "$url" -o "$tmpfile"; then
+        chmod +x "$tmpfile"
+        sudo mv "$tmpfile" /usr/local/bin/kind
+        log "kind ${kind_version} installed to /usr/local/bin/kind"
+    else
+        rm -f "$tmpfile"
+        warn "Failed to download kind from $url. Please install kind manually."
+        return 1
+    fi
+}
+
 # Verify installation
 verify_installations() {
     log "Verifying installations..."
-    local tools=("kubectl" "kubectx" "kubens" "helm" "k9s" "skaffold" "stern" "dive" "popeye" "kubesec" "trivy" "kubetail" "kustomize")
+    local tools=("kubectl" "kubectx" "kubens" "helm" "k9s" "skaffold" "stern" "dive" "popeye" "kubesec" "trivy" "kubetail" "kustomize" "kind")
     local failed=0
     
     for tool in "${tools[@]}"; do
@@ -735,6 +776,7 @@ main() {
     install_flux
     install_cilium
     install_hubble
+    install_kind
     
     # Verify installations
     if [[ "$DRY_RUN" != true ]]; then
