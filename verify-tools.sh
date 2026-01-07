@@ -88,6 +88,7 @@ echo
 echo -e "${YELLOW}Security Tools:${NC}"
 check_tool "kubesec" "kubesec version"
 check_tool "trivy" "trivy --version | head -1"
+check_tool "cmctl" "cmctl version --client --output=short 2>/dev/null || echo 'installed'"
 echo
 
 echo -e "${BLUE}Verification Complete!${NC}"

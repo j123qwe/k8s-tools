@@ -69,6 +69,7 @@ TOOLS INSTALLED:
     • kustomize       - Kubernetes configuration customization
     • flux            - GitOps toolkit for Kubernetes
     • cilium          - Cilium CLI for eBPF-based networking
+    • cmctl           - cert-manager CLI for certificate management
     • kind            - Local Kubernetes (kind) cluster utility
 
 EOF
@@ -615,6 +616,43 @@ install_cilium() {
     log "Cilium CLI installed successfully"
 }
 
+# Install cert-manager CLI (cmctl)
+install_cmctl() {
+    log "Installing cert-manager CLI (cmctl)..."
+    
+    if is_installed "cmctl"; then return; fi
+    
+    if [[ "$DRY_RUN" == true ]]; then
+        debug "DRY RUN: Would install cert-manager CLI (cmctl)"
+        return
+    fi
+    
+    local os arch cmctl_url tmpfile
+    os=$(uname -s | tr '[:upper:]' '[:lower:]')
+    arch=$(uname -m)
+    
+    # Convert arch to expected naming convention
+    case "$arch" in
+        x86_64) arch="amd64" ;;
+        aarch64) arch="arm64" ;;
+        armv7l|armv6l) arch="arm" ;;
+        *) arch="amd64" ;;  # default fallback
+    esac
+    
+    cmctl_url="https://github.com/cert-manager/cmctl/releases/latest/download/cmctl_${os}_${arch}"
+    tmpfile=$(mktemp)
+    
+    if curl -fsSL "$cmctl_url" -o "$tmpfile"; then
+        chmod +x "$tmpfile"
+        sudo mv "$tmpfile" /usr/local/bin/cmctl
+        log "cert-manager CLI (cmctl) installed successfully"
+    else
+        rm -f "$tmpfile"
+        warn "Failed to download cmctl from $cmctl_url. Please install cmctl manually."
+        return 1
+    fi
+}
+
 # Install Hubble CLI
 install_hubble() {
     log "Installing Hubble CLI..."
@@ -705,7 +743,7 @@ install_kind() {
 # Verify installation
 verify_installations() {
     log "Verifying installations..."
-    local tools=("kubectl" "kubectx" "kubens" "helm" "k9s" "skaffold" "stern" "dive" "popeye" "kubesec" "trivy" "kubetail" "kustomize" "kind")
+    local tools=("kubectl" "kubectx" "kubens" "helm" "k9s" "skaffold" "stern" "dive" "popeye" "kubesec" "trivy" "kubetail" "kustomize" "cmctl" "kind")
     local failed=0
     
     for tool in "${tools[@]}"; do
@@ -775,6 +813,7 @@ main() {
     install_kustomize
     install_flux
     install_cilium
+    install_cmctl
     install_hubble
     install_kind
     
