@@ -127,6 +127,14 @@ RUN HUBBLE_VERSION=$(curl -s https://api.github.com/repos/cilium/hubble/releases
     mv hubble /usr/local/bin/ && \
     rm hubble-linux-${CLI_ARCH}.tar.gz
 
+# Install cert-manager CLI (cmctl)
+RUN CMCTL_VERSION=$(curl -s https://api.github.com/repos/cert-manager/cmctl/releases/latest | grep tag_name | cut -d '"' -f 4) && \
+    CLI_ARCH=amd64 && \
+    if [ "$(uname -m)" = "aarch64" ]; then CLI_ARCH=arm64; fi && \
+    curl -L "https://github.com/cert-manager/cmctl/releases/download/${CMCTL_VERSION}/cmctl_linux_${CLI_ARCH}" -o cmctl && \
+    chmod +x cmctl && \
+    mv cmctl /usr/local/bin/
+
 # Install krew as the k8suser
 USER k8suser
 WORKDIR /tmp

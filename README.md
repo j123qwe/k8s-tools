@@ -35,6 +35,7 @@ This repository provides a containerized environment with all the essential Kube
 - **flux** - GitOps toolkit for Kubernetes
 - **cilium** - Cilium CLI for eBPF-based networking and security
 - **hubble** - Cilium Hubble CLI for cluster observability (flows, events, and more)
+- **cmctl** - cert-manager CLI for certificate lifecycle management
 
 ## 🚀 Quick Start
 
