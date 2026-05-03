@@ -359,11 +359,18 @@ install_kubectx() {
                 sudo dnf install -y kubectx
             else
                 # Install from GitHub releases for older systems
-                local version
+                local version temp_dir
                 version=$(curl -s https://api.github.com/repos/ahmetb/kubectx/releases/latest | grep tag_name | cut -d '"' -f 4)
+
+                temp_dir=$(mktemp -d)
+                cd "$temp_dir"
+
                 curl -L "https://github.com/ahmetb/kubectx/releases/download/$version/kubectx_${version#v}_linux_x86_64.tar.gz" | tar xz
                 curl -L "https://github.com/ahmetb/kubectx/releases/download/$version/kubens_${version#v}_linux_x86_64.tar.gz" | tar xz
                 sudo mv kubectx kubens /usr/local/bin/
+
+                cd - > /dev/null
+                rm -rf "$temp_dir"
             fi
             ;;
     esac
@@ -398,10 +405,17 @@ install_k9s() {
         return
     fi
     
-    local k9s_version
+    local k9s_version temp_dir
     k9s_version=$(curl -s https://api.github.com/repos/derailed/k9s/releases/latest | grep tag_name | cut -d '"' -f 4)
+
+    temp_dir=$(mktemp -d)
+    cd "$temp_dir"
+
     curl -L "https://github.com/derailed/k9s/releases/download/$k9s_version/k9s_Linux_amd64.tar.gz" | tar xz
     sudo mv k9s /usr/local/bin/
+
+    cd - > /dev/null
+    rm -rf "$temp_dir"
     
     log "k9s installed successfully"
 }
@@ -435,10 +449,17 @@ install_stern() {
         return
     fi
     
-    local stern_version
+    local stern_version temp_dir
     stern_version=$(curl -s https://api.github.com/repos/stern/stern/releases/latest | grep tag_name | cut -d '"' -f 4)
+
+    temp_dir=$(mktemp -d)
+    cd "$temp_dir"
+
     curl -L "https://github.com/stern/stern/releases/download/$stern_version/stern_${stern_version#v}_linux_amd64.tar.gz" | tar xz
     sudo mv stern /usr/local/bin/
+
+    cd - > /dev/null
+    rm -rf "$temp_dir"
     
     log "stern installed successfully"
 }
@@ -454,10 +475,17 @@ install_dive() {
         return
     fi
     
-    local dive_version
+    local dive_version temp_dir
     dive_version=$(curl -s https://api.github.com/repos/wagoodman/dive/releases/latest | grep tag_name | cut -d '"' -f 4)
+
+    temp_dir=$(mktemp -d)
+    cd "$temp_dir"
+
     curl -L "https://github.com/wagoodman/dive/releases/download/$dive_version/dive_${dive_version#v}_linux_amd64.tar.gz" | tar xz
     sudo mv dive /usr/local/bin/
+
+    cd - > /dev/null
+    rm -rf "$temp_dir"
     
     log "dive installed successfully"
 }
@@ -473,10 +501,17 @@ install_popeye() {
         return
     fi
     
-    local popeye_version
+    local popeye_version temp_dir
     popeye_version=$(curl -s https://api.github.com/repos/derailed/popeye/releases/latest | grep tag_name | cut -d '"' -f 4)
+
+    temp_dir=$(mktemp -d)
+    cd "$temp_dir"
+
     curl -L "https://github.com/derailed/popeye/releases/download/$popeye_version/popeye_linux_amd64.tar.gz" | tar xz
     sudo mv popeye /usr/local/bin/
+
+    cd - > /dev/null
+    rm -rf "$temp_dir"
     
     log "popeye installed successfully"
 }
@@ -524,8 +559,9 @@ install_trivy() {
     
     case "$distro" in
         "debian")
-            wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-            echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+            sudo install -m 0755 -d /etc/apt/keyrings
+            wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /etc/apt/keyrings/trivy.gpg > /dev/null
+            echo "deb [signed-by=/etc/apt/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/trivy.list > /dev/null
             sudo apt update
             sudo apt install -y trivy
             ;;
